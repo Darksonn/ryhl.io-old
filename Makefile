@@ -1,6 +1,8 @@
 
 all: io-domain/index.html io-domain/fractals.html io-domain/newton-intro.html io-domain/highlight-fsharp io-domain/style.css io-domain/code/hsltorgb.fs io-domain/code/intro.fsx io-domain/CNAME io-domain/pubkey.gpg io-domain/README.md io-domain/img io-domain/android-chrome-192x192.png io-domain/android-chrome-512x512.png io-domain/apple-touch-icon.png io-domain/browserconfig.xml io-domain/favicon-16x16.png io-domain/favicon-32x32.png io-domain/favicon.ico io-domain/manifest.json io-domain/mstile-150x150.png io-domain/safari-pinned-tab.svg
 
+publish: all
+	HASH=`git rev-parse HEAD` && cd io-domain && git commit -am "update to commit $$HASH" && git push
 
 io-domain/index.html: pages/index.html
 	cp pages/index.html io-domain/index.html
