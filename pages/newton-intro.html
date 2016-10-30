@@ -1,0 +1,256 @@
+﻿<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Introduction to Newton Fractals – ryhl.io</title>
+    <meta name="keywords" content="fractal, newton fractal, fsharp, F#">
+    <meta name="description" content="When I try to learn a new programming language, I don’t write a hello world. Instead, I write a generator of newton fractals. To understand what newton fractals are, you first need to understand what Newton’s method is.">
+    <meta name="subject" content="fractals">
+    <meta name="language" content="en-US">
+    <meta name="robots" content="index,follow">
+    <meta name="revised" content="2016-10-30">
+    <meta name="date" content="2016-10-30">
+    <meta name="author" content="Kristoffer Ryhl-Johansen, kristoffer@ryhl.dk">
+    <meta name="pagename" content="Introduction to Newton Fractals">
+    <meta name="category" content="fractals">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image" itemprop="image primaryImageOfPage" content="http://ryhl.io/img/newton-thumb.png">
+    <meta name="twitter:title" property="og:title" itemprop="title name" content="Introduction to Newton Fractals">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="image_src" type="image/png" href="http://ryhl.io/img/newton-thumb.png">
+
+    <link rel="stylesheet" href="highlight-fsharp/style.css">
+    <script src="highlight-fsharp/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+  </head>
+  <body onload="jsRemove();">
+    <h1><a href="index.html">
+    <svg id="varkappa" version="1.1" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.1259375em" height="1.09375em" viewBox="0 0 175 170" enable-background="new 0 0 175 170" xml:space="preserve">
+      <g transform="translate(-241.83035,-280.77737)">
+        <path d="M373.178,331.207c-4.037,27.995-6.055,47.526-6.055,58.594c0,23.047,5.924,34.57,17.773,34.57 c8.333,0,17.057-4.883,26.172-14.648l3.711,2.539c-6.25,14.453-11.816,24.023-16.699,28.711s-10.254,7.031-16.113,7.031 c-8.984,0-15.397-5.404-19.238-16.211c-3.842-10.807-5.762-23.177-5.762-37.109c0-13.672,1.822-31.966,5.469-54.883 c-13.933,14.323-31.381,36.589-52.344,66.797c-13.021,18.75-21.81,30.339-26.367,34.766c-4.557,4.428-9.961,6.641-16.211,6.641 c-9.505,0-14.258-4.688-14.258-14.063c0-4.947,1.888-9.537,5.664-13.77c3.776-4.231,12.695-11.165,26.758-20.801 c4.037-26.432,6.055-45.703,6.055-57.813c0-22.917-5.99-34.375-17.969-34.375c-8.203,0-16.862,4.883-25.977,14.648l-3.906-2.539 c10.287-23.828,21.224-35.742,32.813-35.742c8.854,0,15.234,5.371,19.141,16.113s5.859,23.145,5.859,37.207 c0,13.802-1.758,32.031-5.273,54.688c15.495-15.625,32.487-37.174,50.977-64.648c12.239-18.099,21.061-29.85,26.465-35.254 c5.403-5.403,11.23-8.105,17.48-8.105c4.297,0,7.715,1.367,10.254,4.102s3.809,6.055,3.809,9.961c0,5.208-1.953,9.961-5.859,14.258 S386.85,322.613,373.178,331.207L373.178,331.207z"/>
+      </g>
+    </svg></a>Introduction to Newton Fractals – ryhl.io</h1>
+    <div class="date">Published 2016-10-30 by Kristoffer Ryhl-Johansen</div>
+    <a href="fractals.html">Go to the fractal page</a>
+    <p>
+    When I try to learn a new programming language, I don’t write a hello
+    world. Instead, I write a generator of newton fractals. Here’s an example
+    of a newton fractal:
+    </p>
+    <img class="center-img" src="img/newton-thumb.png" style="max-width:512px">
+    <div class="caption">
+      Newton fractal for <i>z</i><sup>8</sup><div class="kern3"></div>+<div
+        class="kern3"></div>15<div class="kern1"></div><i>z</i><sup>4</sup><div
+        class="kern3"></div>&minus;<div class="kern3"></div>16 in the square
+      from 0.5+0.5i to 1.5+1.5i.
+    </div>
+    <h2>What is a newton fractal?</h2>
+    <p>
+    To understand what newton fractals are, you first need to understand what
+    <a href="https://en.wikipedia.org/wiki/Newtons_method">Newton’s method</a>
+    is.
+    </p>
+    <p>
+    Newton’s method is a way to approximate solutions to an equation of the form
+    <i>f</i>(<i>x</i>) = 0. To use the method, first try to guess a solution
+    <i>x</i><sub>0</sub> to the equation, and use the following formula:
+    </p>
+    <div class="display-style">
+      <i>x</i><sub><i>n</i>+1</sub> = <i>x<sub>n</sub></i> &minus;
+      <div class="frac">
+        <div class="fracouter">
+          <div class="fracnum">
+            <i>f</i>(<i>x<sub>n</sub></i>)
+          </div>
+        </div>
+        <div class="fracouter">
+          <div class="fracden">
+            <i>f</i><div class="kern3"></div>ʹ(<i>x<sub>n</sub></i>)
+          </div>
+        </div>
+      </div>
+    </div>
+    <p>
+    The value <i>x</i><sub>1</sub> that you calculate with this formula will be
+    closer to a solution than <i>x</i><sub>0</sub> was. If you want an even
+    better approximation to the solution, just repeat the formula on
+    <i>x</i><sub>1</sub> to obtain <i>x</i><sub>2</sub>. You can repeat this as
+    many times as you want, to obtain a solution that is as precise as you want.
+    </p>
+    <p>
+    Some equations have multiple solutions, and the solution you converge to is
+    determined by the initial guess. This is what forms the basis for creating
+    the fractal. The wikipedia page says the method works on real-valued
+    functions, but it works just fine on complex-valued functions as well.
+    </p>
+    <p>
+    An interesting thing to investigate is then, what root do the different
+    starting guesses converge to? Below is shown some F# code which creates an
+    image with each pixel given a color corresponding to the root that it
+    converged to. I picked the function <i>f</i>(<i>x</i>) =
+    <i>x</i><sup>3</sup>&minus;1 as the one used in the iteration step, since
+    it’s a rather simple function, that’s not so simple it doesn’t show any
+    fractal behaviour.
+    </p>
+    <noscript>Enable javascript for syntax highlighting.</noscript>
+    <pre><code class="fsharp">type C = System.Numerics.Complex
+open System
+open System.Drawing
+
+(* pick the region of the complex plane to show *)
+let width = 512
+let height = 512
+let center = new C(0.0, 0.0)
+let scale = 256.0 (* how many pixels per unit *)
+
+(* pick a complex number from the pixel coordinate *)
+let tc x w = (float x - 0.5*float w) / scale
+let transform (x,y) = center + new C(tc x width, tc y height)
+
+(* how many times we improve the guess *)
+let iterations = 100
+
+(* the function and its derivative *)
+let f x = x*x*x - new C(1.0, 0.0)
+let fd x = new C(3.0, 0.0) * x*x
+
+(* computes one iteration *)
+let step z = z - (f z) / (fd z)
+
+(* computes n iterations *)
+let rec compute_pixel z n = if n = 0 then z else compute_pixel (step z) (n - 1)
+
+(* picks a color for the pixel
+ * this function uses the function hsltorgb,
+ * which is not included here for briefness *)
+let complex_to_color (z:C) =
+  let (r,g,b) = hsltorgb (z.Phase, 0.75, 0.5)
+  Color.FromArgb(r, g, b)
+
+(* functions to compute the color of a pixel *)
+let newton z = compute_pixel z iterations
+let newton_pixel x y = transform (x,y) |&gt; newton |&gt; complex_to_color
+
+(* create an image *)
+let bitmap = new Bitmap(width, height)
+for px = 0 to width-1 do
+  for py = 0 to height-1 do
+    bitmap.SetPixel(px, py, newton_pixel px py)
+bitmap.Save("fractal.png", System.Drawing.Imaging.ImageFormat.Png)
+bitmap.Dispose</code></pre>
+    <p>
+    The code shown here also depends on the function <code>hsltorgb</code> which
+    is excluded for brevity, and is available <a href="code/hsltorgb.fs">here</a>.
+    Running this code produces the following image:
+    </p>
+    <img class="center-img" src="img/newton-ugly.png" style="max-width:512px">
+    <div class="caption">
+      Newton fractal for <i>z</i><sup>3</sup><div
+        class="kern3"></div>&minus;<div class="kern3"></div>1 in the square from
+      &minus;1&minus;<div class="kern1"></div>i to 1+<div class="kern1"></div>i.
+    </div>
+    <p>
+    With a preliminary result like this, it’s clear that this has the potential
+    to create very interesting and pretty images.
+    </p>
+    <h2>Prettier fractals</h2>
+    <p>
+    In the image above I ran 100 iterations for every pixel, but this is
+    probably way more than necessary. Instead, we can stop when the iteration
+    changes the result by something very small. This also allows us to create a
+    more interesting image: we can change the darkness depending on the amount
+    of iterations we made before stopping. We make the following chances to the
+    code:
+    </p>
+    <noscript>Enable javascript for syntax highlighting.</noscript>
+    <pre><code class="fsharp">(* now only performs as many iterations as necessary,
+ * returns the amount of iterations performed too *)
+let compute_pixel (z:C) =
+  let rec aux z n =
+    let z2 = step z
+    if (z2 - z).Magnitude &lt; 0.001 || n &gt; 100 then (z2,n) else aux z2 (n+1)
+  aux z 0
+
+(* incorporate the amount of iterations in the color *)
+let complex_to_color (z:C,n) =
+  let (r,g,b) = hsltorgb (z.Phase, 0.75, 0.5 / (1.+0.18*float n))
+  Color.FromArgb(r, g, b)
+
+let newton z = compute_pixel z</code></pre>
+    <p>
+    Running the updated code produces the following image:
+    </p>
+    <img class="center-img" src="img/newton-iters.png" style="max-width:512px">
+    <div class="caption">
+      Newton fractal for <i>z</i><sup>3</sup><div
+        class="kern3"></div>&minus;<div class="kern3"></div>1 in the square from
+      &minus;1&minus;<div class="kern1"></div>i to 1+<div class="kern1"></div>i.
+    </div>
+    <p>
+    It would be even nicer if we could make the brightness change smoothly. If
+    you’re okay with foregoing the optimization of only running as many
+    iterations as necessary, you can make the color change smoothly. In the
+    previous image the darkness was chosen from the amount of iterations
+    performed. To have the darkness change smoothly, compute the sum of the
+    distances from the values <i>x</i><sub>i</sub> to the root it converged to,
+    and base the darkness on that sum. The following changes to the code
+    incorporates this:
+    </p>
+    <noscript>Enable javascript for syntax highlighting.</noscript>
+    <pre><code class="fsharp">let compute_pixel (z:C) =
+  let rec aux z n =
+    let z2 = step z
+    if n &gt; 100 then (z2,0.0) else
+      let (zf,sum) = aux z2 (n+1)
+      let delta = (z - zf).Magnitude
+      (zf, sum + delta)
+  aux z 0
+
+(* incorporate the amount of iterations in the color *)
+let complex_to_color (z:C,n) =
+  let (r,g,b) = hsltorgb (z.Phase, 0.75, 0.5 / (1.+0.18*n))
+  Color.FromArgb(r, g, b)</code></pre>
+    <p>
+    Running the updated code produces the following image:
+    </p>
+    <img class="center-img" src="img/newton-smooth-dark.png" style="max-width:512px">
+    <div class="caption">
+      Newton fractal for <i>z</i><sup>3</sup><div
+        class="kern3"></div>&minus;<div class="kern3"></div>1 in the square from
+      &minus;1&minus;<div class="kern1"></div>i to 1+<div class="kern1"></div>i.
+    </div>
+    <p>
+    This is better than before, but adding the distances linearly doesn’t quite
+    give the gradient I want. The following code applies a sublinear function to
+    the distance before adding them together:
+    </p>
+    <noscript>Enable javascript for syntax highlighting.</noscript>
+    <pre><code class="fsharp">let compute_pixel (z:C) =
+  let rec aux z n =
+    let z2 = step z
+    if n &gt; 100 then (z2,0.0) else
+      let (zf,sum) = aux z2 (n+1)
+      let delta = (z - zf).Magnitude
+      (zf, sum + 1.0 - 1./(1.+exp (delta+3.5)-exp 3.5))
+  aux z 0</code></pre>
+    <p>
+    Running the updated code produces the following image:
+    </p>
+    <img class="center-img" src="img/newton-smooth-nice.png" style="max-width:512px">
+    <div class="caption">
+      Newton fractal for <i>z</i><sup>3</sup><div
+        class="kern3"></div>&minus;<div class="kern3"></div>1 in the square from
+      &minus;1&minus;<div class="kern1"></div>i to 1+<div class="kern1"></div>i.
+    </div>
+    <p>
+    The final code is available <a href="code/intro.fsx">here</a>.
+    </p>
+  </body>
+</html>
