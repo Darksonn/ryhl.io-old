@@ -37,5 +37,5 @@ io-domain/img: img
 io-domain/android-chrome-192x192.png io-domain/android-chrome-512x512.png io-domain/apple-touch-icon.png io-domain/browserconfig.xml io-domain/favicon-16x16.png io-domain/favicon-32x32.png io-domain/favicon.ico io-domain/manifest.json io-domain/mstile-150x150.png io-domain/safari-pinned-tab.svg: favicon/*
 	cp favicon/* io-domain/
 
-
+# vim macro for putting targets in all
 # /:0yt:jmaggjA jkp`a
