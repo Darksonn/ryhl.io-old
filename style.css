@@ -50,6 +50,12 @@ h1,h2,h3 {
   font-family: Consolas;
   font-weight: bold;
 }
+#email {
+  text-align: center;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  font-size: 1.5em;
+}
 
 
 .date {
