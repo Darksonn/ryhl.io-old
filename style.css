@@ -37,11 +37,14 @@ h1,h2,h3 {
 #socialmediabox {
   margin-left: auto;
   margin-right: auto;
-  width: -moz-fit-content;
-  width: fit-content;
+  height: 50px;
+  width: 170px;
 }
 #socialmediabox > :not(:last-child) {
   margin-right: 48px;
+}
+#socialmediabox > a {
+  height: 50px;
 }
 .socialmedia {
   height: 50px;
