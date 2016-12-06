@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8">
     <title>Fractals on the Riemann Sphere – ryhl.io</title>
-    <meta name="keywords" content="fractal, newton fractal, riemann sphere">
-    <meta name="description" content="">
+    <meta name="keywords" content="fractal, newton fractal, riemann sphere, dual numbers">
+    <meta name="description" content="In order to investigate the behaviour of Newton Fractals at infinity, I’ve plotted Newton Fractals on the Riemann Sphere. Here’s an animated video of a Newton Fractal plotted on the Riemann Sphere using youtubes 360° video feature:">
     <meta name="subject" content="fractals">
     <meta name="language" content="en-US">
     <meta name="robots" content="index,follow">
-    <meta name="revised" content="2016-10-31">
-    <meta name="date" content="2016-10-31">
+    <meta name="revised" content="2016-12-06">
+    <meta name="date" content="2016-12-06">
     <meta name="author" content="Kristoffer Ryhl-Johansen, kristoffer@ryhl.dk">
     <meta name="pagename" content="Fractals on the Riemann Sphere">
     <meta name="category" content="fractals">
@@ -17,7 +17,7 @@
     <meta property="og:image" itemprop="image primaryImageOfPage" content="">
     <meta name="twitter:title" property="og:title" itemprop="title name" content="Fractals on the Riemann Sphere">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="image_src" type="image/png" href="">
+    <link rel="image_src" type="image/png" href="http://ryhl.io/img/riemann.png">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
@@ -33,21 +33,116 @@
         <path d="M373.178,331.207c-4.037,27.995-6.055,47.526-6.055,58.594c0,23.047,5.924,34.57,17.773,34.57 c8.333,0,17.057-4.883,26.172-14.648l3.711,2.539c-6.25,14.453-11.816,24.023-16.699,28.711s-10.254,7.031-16.113,7.031 c-8.984,0-15.397-5.404-19.238-16.211c-3.842-10.807-5.762-23.177-5.762-37.109c0-13.672,1.822-31.966,5.469-54.883 c-13.933,14.323-31.381,36.589-52.344,66.797c-13.021,18.75-21.81,30.339-26.367,34.766c-4.557,4.428-9.961,6.641-16.211,6.641 c-9.505,0-14.258-4.688-14.258-14.063c0-4.947,1.888-9.537,5.664-13.77c3.776-4.231,12.695-11.165,26.758-20.801 c4.037-26.432,6.055-45.703,6.055-57.813c0-22.917-5.99-34.375-17.969-34.375c-8.203,0-16.862,4.883-25.977,14.648l-3.906-2.539 c10.287-23.828,21.224-35.742,32.813-35.742c8.854,0,15.234,5.371,19.141,16.113s5.859,23.145,5.859,37.207 c0,13.802-1.758,32.031-5.273,54.688c15.495-15.625,32.487-37.174,50.977-64.648c12.239-18.099,21.061-29.85,26.465-35.254 c5.403-5.403,11.23-8.105,17.48-8.105c4.297,0,7.715,1.367,10.254,4.102s3.809,6.055,3.809,9.961c0,5.208-1.953,9.961-5.859,14.258 S386.85,322.613,373.178,331.207L373.178,331.207z"/>
       </g>
     </svg></a>Fractals on the Riemann Sphere – ryhl.io</h1>
-    <div class="date">Published 2016-10-31 by Kristoffer Ryhl-Johansen</div>
+    <div class="date">Published 2016-12-06 by Kristoffer Ryhl-Johansen</div>
     <a href="fractals.html">Go to the fractal page</a>
     <p>
     In order to investigate the behaviour of <a href="newton-intro.html">Newton
       Fractals</a> at infinity, I’ve plotted Newton Fractals on the Riemann
     Sphere. Here’s an animated video of a Newton Fractal plotted on the Riemann
-    Sphere using youtubes 360° video feature:
+    Sphere using Youtube’s 360&deg; video feature:
     </p>
-    <iframe class="youtube" width="560" height="315" src="https://www.youtube.com/embed/ErmEzYHugm8" frameborder="0" allowfullscreen></iframe>
+    <iframe class="youtube center-img" width="560" height="315" src="https://www.youtube.com/embed/ErmEzYHugm8" frameborder="0" allowfullscreen></iframe>
     <p>
-    Since I was making videos for youtube, I decided that I might as well
+    Since I was making videos for Youtube, I decided that I might as well
     animate the newton fractals by generating many newton fractals where I vary
     the function slightly. Since I was making a lot of fractals, which was
     taking a long time, I decided to do the computations on the GPU for this
     project.  This was also my first time using the GPU.
+    </p>
+    <p>
+    The code I wrote to generate these videos can be found
+    <a href="https://github.com/Darksonn/newton-riemann">on github</a>. In
+    general using the gpu wasn’t very difficult, I could essentially write the
+    function I wanted to run using normal C++ code, and I won’t go into further
+    details about this here. You can read
+    <a href="https://github.com/Darksonn/newton-riemann/blob/master/src/gpu.cu">the code</a>
+    yourself if you want.
+    </p>
+    <p>
+    There are however some points I <i>do</i> want to talk about: How one
+    creates videos that will be played in 360&deg; on Youtube, and how I used dual
+    numbers to make it easier to change the function.
+    </p>
+    <h2>Dual numbers</h2>
+    <p>
+    Normally when making code that generates newton fractals, you have to
+    manually type in both the function you want to compute <i>and</i> its
+    derivative. During this project I got tired of this, and decided to have the
+    computer do the calculations for me.
+    </p>
+    <p>
+    I did this using
+    <a href="https://en.wikipedia.org/wiki/Dual_number">dual numbers</a>. Dual
+    numbers work by adding a new value &epsilon; to the number system, that
+    satisfies &epsilon;<sup>2</sup>&nbsp;=&nbsp;0. This is similar to how
+    complex numbers are introduced, but the constant’s square is equal to 0
+    instead of &minus;1. The reason this is cool can be seen by writing the
+    Taylor expansion of <i>f</i>(<i>x</i>+&epsilon;) around <i>x</i>:
+    </p>
+    <div class="display-style">
+      <i>f</i>(<i>x</i>+&epsilon;) = <i>f</i>(<i>x</i>) + <i>f</i><div
+         class="kern3"></div>ʹ(<i>x</i>)&middot;&epsilon; +
+       O(<i>x</i><sup>2</sup>)&middot;&epsilon;<sup>2</sup>
+    </div>
+    <p>
+    As one can see, every term besides the two first are multiplied with
+    &epsilon;<sup>2</sup>, which is zero. More generally one has
+    <i>f</i>(<i>x</i>+<i>a</i>&epsilon;)&nbsp;=&nbsp;<i>f</i>(<i>x</i>) +
+    <i>af</i><span class="kern3"></span>ʹ(<i>x</i>)&middot;&epsilon;.
+    </p>
+    <p>
+    Using these properties, you can type the function once in your program, and
+    then apply it with the dual number <i>x</i>+&epsilon; to obtain both the
+    value and derivative at that point.
+    My implementation of these numbers can be found in
+    <a href="https://github.com/Darksonn/newton-riemann/blob/master/src/dual.cu">the Github repository</a>.
+    </p>
+    <h2>360&deg; videos</h2>
+    <p>
+    In order for a 360&deg; video to be displayed properly on Youtube, it has to
+    be encoded in an
+    <a href="https://en.wikipedia.org/wiki/Equirectangular_projection">equirectangular projection</a>.
+    This means that the <i>x</i> coordinate is mapped to the longitude, and the
+    <i>y</i> coordinate is mapped to the latitude. In other words, a vertical line
+    in the image is a straight line from the top of the sphere to the bottom of
+    the sphere, and each horizontal line is a spherical horizontal ring in the
+    sphere. Notice the image has far more detail in the top and bottom of the
+    sphere, than in the middle.
+    </p>
+    <img class="center-img" src="img/riemann.png">
+    <div class="caption">
+      A newton fractal on the Riemann sphere shown using an equirectangular
+      projection.
+    </div>
+    <p>
+    Since I was making newton fractals, I needed to map the pixels to complex
+    numbers. On the Riemann sphere, one can compute the complex number
+    corresponding to a specific longitude and latitude using the formula
+    </p>
+    <div class="display-style">
+      <i>z</i> = tan(&phi;)&middot;e<sup>i<div class="kern1"></div>&lambda;</sup>
+    </div>
+    <p>
+    where &phi; is the latitude, and &lambda; is the longitude. Then all there
+    is left is to linearly scale the parameters to match the resolution of the
+    image.
+    </p>
+    <h3>Marking video files as spherical</h3>
+    <p>
+    The last important bit is how one can tell Youtube that the video is
+    spherical, and not flat. This is pretty easy using the
+    <a href="https://github.com/google/spatial-media">python tool spatial media</a>.
+    The commands I used to make my video files flat are the following:
+    </p>
+    <tt>
+      $ git clone --depth=1 https://github.com/google/spatial-media
+      spatial-media<br>
+      $ python2.7 ./spatial-media/spatialmedia/__main__.py -i flat-video.mp4
+      spherical-video.mp4
+    </tt>
+    <p>
+    Depending on your setup you might need to run it as just <tt>python</tt> or
+    <tt>python2</tt>, instead of <tt>python2.7</tt> like I did.
     </p>
   </body>
 </html>
