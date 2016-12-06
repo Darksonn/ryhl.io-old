@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Fractals on the Riemann Sphere – ryhl.io</title>
     <meta name="keywords" content="fractal, newton fractal, riemann sphere, dual numbers">
-    <meta name="description" content="In order to investigate the behaviour of Newton Fractals at infinity, I’ve plotted Newton Fractals on the Riemann Sphere. Here’s an animated video of a Newton Fractal plotted on the Riemann Sphere using youtubes 360° video feature:">
+    <meta name="description" content="In order to investigate the behaviour of Newton Fractals at infinity, I’ve plotted Newton Fractals on the Riemann sphere. Here’s an animated video of a Newton Fractal plotted on the Riemann sphere using youtubes 360° video feature:">
     <meta name="subject" content="fractals">
     <meta name="language" content="en-US">
     <meta name="robots" content="index,follow">
@@ -38,12 +38,12 @@
     <p>
     In order to investigate the behaviour of <a href="newton-intro.html">Newton
       Fractals</a> at infinity, I’ve plotted Newton Fractals on the Riemann
-    Sphere. Here’s an animated video of a Newton Fractal plotted on the Riemann
-    Sphere using Youtube’s 360&deg; video feature:
+    sphere. Here’s an animated video of a Newton Fractal plotted on the Riemann
+    sphere using YouTube’s 360&deg; video feature:
     </p>
     <iframe class="youtube center-img" width="560" height="315" src="https://www.youtube.com/embed/ErmEzYHugm8" frameborder="0" allowfullscreen></iframe>
     <p>
-    Since I was making videos for Youtube, I decided that I might as well
+    Since I was making videos for YouTube, I decided that I might as well
     animate the newton fractals by generating many newton fractals where I vary
     the function slightly. Since I was making a lot of fractals, which was
     taking a long time, I decided to do the computations on the GPU for this
@@ -51,33 +51,30 @@
     </p>
     <p>
     The code I wrote to generate these videos can be found
-    <a href="https://github.com/Darksonn/newton-riemann">on github</a>. In
-    general using the gpu wasn’t very difficult, I could essentially write the
-    function I wanted to run using normal C++ code, and I won’t go into further
+    <a href="https://github.com/Darksonn/newton-riemann">on GitHub</a>. In
+    general, using the GPU wasn’t very difficult. I could essentially write the
+    function I wanted to run using normal C++ code, so I won’t go into further
     details about this here. You can read
     <a href="https://github.com/Darksonn/newton-riemann/blob/master/src/gpu.cu">the code</a>
     yourself if you want.
     </p>
     <p>
-    There are however some points I <i>do</i> want to talk about: How one
-    creates videos that will be played in 360&deg; on Youtube, and how I used dual
-    numbers to make it easier to change the function.
+    There are, however, two things, that I do want to explain: How one creates
+    360° videos for YouTube, and how I use dual numbers to make changing the
+    function easier.
     </p>
     <h2>Dual numbers</h2>
     <p>
-    Normally when making code that generates newton fractals, you have to
-    manually type in both the function you want to compute <i>and</i> its
-    derivative. During this project I got tired of this, and decided to have the
-    computer do the calculations for me.
+    Having to define both the function and its derivative sucks. Luckily we can
+    get away with only the function by using
+    <a href="https://en.wikipedia.org/wiki/Dual_number">dual numbers</a>.
     </p>
     <p>
-    I did this using
-    <a href="https://en.wikipedia.org/wiki/Dual_number">dual numbers</a>. Dual
-    numbers work by adding a new value &epsilon; to the number system, that
-    satisfies &epsilon;<sup>2</sup>&nbsp;=&nbsp;0. This is similar to how
-    complex numbers are introduced, but the constant’s square is equal to 0
-    instead of &minus;1. The reason this is cool can be seen by writing the
-    Taylor expansion of <i>f</i>(<i>x</i>+&epsilon;) around <i>x</i>:
+    In dual numbers, we add a new value &epsilon; to the number system. This new
+    value satisfies the identity &epsilon;<sup>2</sup>&nbsp;=&nbsp;0, similar to
+    how the imaginary unit is introduced for complex numbers. This is cool
+    because the Taylor expansion of <i>f</i>(<i>x</i>+&epsilon;) around <i>x</i>
+    can be written in following form:
     </p>
     <div class="display-style">
       <i>f</i>(<i>x</i>+&epsilon;) = <i>f</i>(<i>x</i>) + <i>f</i><div
@@ -85,29 +82,31 @@
        O(<i>x</i><sup>2</sup>)&middot;&epsilon;<sup>2</sup>
     </div>
     <p>
-    As one can see, every term besides the two first are multiplied with
-    &epsilon;<sup>2</sup>, which is zero. More generally one has
-    <i>f</i>(<i>x</i>+<i>a</i>&epsilon;)&nbsp;=&nbsp;<i>f</i>(<i>x</i>) +
-    <i>af</i><span class="kern3"></span>ʹ(<i>x</i>)&middot;&epsilon;.
+    This means every term beside the first two are multiplied by
+    &epsilon;<sup>2</sup>, which is zero, allowing us to write
+    <i>f</i>(<i>x</i>+&epsilon;) simply as <i>f</i>(<i>x</i>) + <i>f</i><span
+         class="kern3"></span>ʹ(<i>x</i>)&middot;&epsilon;. More generally we
+       have <i>f</i>(<i>x</i>+<i>a</i>&epsilon;)&nbsp;=&nbsp;<i>f</i>(<i>x</i>)
+       + <i>af</i><span class="kern3"></span>ʹ(<i>x</i>)&middot;&epsilon;.
     </p>
     <p>
     Using these properties, you can type the function once in your program, and
-    then apply it with the dual number <i>x</i>+&epsilon; to obtain both the
-    value and derivative at that point.
+    when you evaluate the function at the dual number <i>x</i>+&epsilon;, you
+    obtain the value and derivative at that point.
     My implementation of these numbers can be found in
-    <a href="https://github.com/Darksonn/newton-riemann/blob/master/src/dual.cu">the Github repository</a>.
+    <a href="https://github.com/Darksonn/newton-riemann/blob/master/src/dual.cu">the GitHub repository</a>.
     </p>
     <h2>360&deg; videos</h2>
     <p>
-    In order for a 360&deg; video to be displayed properly on Youtube, it has to
-    be encoded in an
+    In order for a 360&deg; video to be displayed properly on YouTube, it has to
+    be encoded using an
     <a href="https://en.wikipedia.org/wiki/Equirectangular_projection">equirectangular projection</a>.
     This means that the <i>x</i> coordinate is mapped to the longitude, and the
     <i>y</i> coordinate is mapped to the latitude. In other words, a vertical line
-    in the image is a straight line from the top of the sphere to the bottom of
-    the sphere, and each horizontal line is a spherical horizontal ring in the
-    sphere. Notice the image has far more detail in the top and bottom of the
-    sphere, than in the middle.
+    in the image corresponds to a straight line from the top of the sphere to the bottom of
+    the sphere, and each horizontal line corresponds to a horizontal ring in the
+    sphere. This means the ‘resolution’ of the image will be higher at the
+    top and bottom than in the middle.
     </p>
     <img class="center-img" src="img/riemann.png">
     <div class="caption">
@@ -120,7 +119,7 @@
     corresponding to a specific longitude and latitude using the formula
     </p>
     <div class="display-style">
-      <i>z</i> = tan(&phi;)&middot;e<sup>i<div class="kern1"></div>&lambda;</sup>
+      <i>z</i> = tan(&phi;)&middot;e<sup>i<div class="kern1"></div>&lambda;</sup>,
     </div>
     <p>
     where &phi; is the latitude, and &lambda; is the longitude. Then all there
@@ -129,20 +128,20 @@
     </p>
     <h3>Marking video files as spherical</h3>
     <p>
-    The last important bit is how one can tell Youtube that the video is
+    The last important bit is how one can tell YouTube that the video is
     spherical, and not flat. This is pretty easy using the
-    <a href="https://github.com/google/spatial-media">python tool spatial media</a>.
-    The commands I used to make my video files flat are the following:
+    <a href="https://github.com/google/spatial-media">Python tool “spatial media”</a>.
+    The commands I used to make my video files spherical are the following:
     </p>
     <tt>
       $ git clone --depth=1 https://github.com/google/spatial-media
       spatial-media<br>
-      $ python2.7 ./spatial-media/spatialmedia/__main__.py -i flat-video.mp4
+      $ python2 ./spatial-media/spatialmedia/__main__.py -i flat-video.mp4
       spherical-video.mp4
     </tt>
     <p>
-    Depending on your setup you might need to run it as just <tt>python</tt> or
-    <tt>python2</tt>, instead of <tt>python2.7</tt> like I did.
+    Depending on your setup you might need to run it as just <tt>python</tt>,
+    instead of <tt>python2</tt> like I did.
     </p>
   </body>
 </html>
