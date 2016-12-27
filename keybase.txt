@@ -1,0 +1,72 @@
+==================================================================
+https://keybase.io/aliceryhl
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://ryhl.io
+  * I am aliceryhl (https://keybase.io/aliceryhl) on keybase.
+  * I have a public key with fingerprint 49F6 C1FA A749 60F4 3A5B  86A1 EE7A 392F DE96 209F
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "0101b2516e6c74613b321d99327b340986d7dcb21371baf75159982dfdac266046320a",
+            "fingerprint": "49f6c1faa74960f43a5b86a1ee7a392fde96209f",
+            "host": "keybase.io",
+            "key_id": "ee7a392fde96209f",
+            "kid": "0101b2516e6c74613b321d99327b340986d7dcb21371baf75159982dfdac266046320a",
+            "uid": "16c79715ff6c94559cac1e20c9f6cf19",
+            "username": "aliceryhl"
+        },
+        "service": {
+            "hostname": "ryhl.io",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1482843049,
+    "expire_in": 157680000,
+    "prev": "7c03da36e851b44253b53d767fd366ea5b627f2c76d920b293d27a0ada60e5ed",
+    "seqno": 4,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+
+owGtUm1QVFUY3oVdAsFAQ4tUZrkKmnzd749t1FVHaRm1hIwmgvWee8+Fy8fusrsg
+H0LRJErBLOWQhgTVThIVo2QtWPvHhsExkpIZGkeUBdLAHCgVGIEYu5f0Xz87f868
+z3me5zzvOW/D8kBNsHaqnEse/sDQqu27DTSvAqGjAgE2sQwxViD5cGmDBSJ0uiz5
+sogYERRDMYBTGA1pgSFpjAAEjokcR+AMIEiUY2mREQWAYwSDAV5iKIziOBYXJZEX
+cJpGSZrAUR5JQCTZmgMddodsdSm2JCfRAibxPENyNCqRBE8BluYxCBme4HBJhByN
+o5ykCHNtTlWhhAO8EybJNgVTCstSvP/g/8+5i5fsMMWFYzBKUmJzJEVxAi9gEEcF
+tQ8J41SiEzqsfCFU2HyBLEBHWW4BUpmAKHCJUqovq7byiKKe/tuL3WFz2QRbgQLm
+ulx2o6pxldlV0iEILI/kFiBbReUJFUEJdDhlmxUxYgpTcMmqH0ayOEsSKMklILDU
+LjugRVYZFEOzqLLUa2CJYskIKCHyBA1ZCksHJIlTBKAIkaEZSSRoGir/QOOMhAsM
+LXI4CnCOEHGGR3mRp1FIQRFROyqy2hAjqeTkcxRPp5xj5V3FDohULqsNIHQabbBm
+3eoYnXn2wnyb+eC0MbPmk8djpw9QZ06zLCTiMXJKF/7wQM7Gj/bdzYif2uY2XPfN
+DA/xF8pv9l4N7th9KSFrVSOy8/lJVyP3QD+0Iv9bfIe/1dfzcL74limorXzyQ/Da
+0dWmb3YWdm2cu+4dTMnKqneY6bpds/5535njhtAXZpOif06761tf2P3udET7qrbW
+Y/p+8FZPQphh09tpVN1C+0TsVOpi+4x+/xiB5epLwBpP3/3oobjTc5q8lje1/RWC
+vvq4uEsfEEAc/XH0UPaw8XXL5QH/Fw/Gz14zCefvwYXMseYjsyeuVX3/x7jGP3uu
+tnq5/cT+3ujkP7uvtNxm7yTGdo0DXWB6341uw55y9sDlK2mj5yLfe+ZiVH52Vfi9
+uqg+X9PVenOaXuf+7mTNyIawzV/tZTyecX/02XrrYtFnd+IMcaN/WU1u8iUd88Ti
+zRsEsBS7jn39Oz84t4Ot/AmZOOju6x2rhuYY+Xzymvt/R639zTIR3/HKr5G6p1Oe
+zatZlxxo3pMiHbZUPPVxz3R4075PP1/fm2cbcBfMFXUxYafAzGTj9lBgGimK2H7S
+k757fO/aL0djclOC2lZ6u4OzbHxkUGls/Ok0byeo1f7i35zkfTHTJOdtqt7QMFny
+fqjw5OGLI553Uld0brlUvSURPMdua2nvX+n1T1SlhDTHb02+lfFyRMjWIwtFqb68
+znSADzY0ewea3gjL7s84kzP6Q2mi9A8=
+=giF4
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/aliceryhl
+
+==================================================================
