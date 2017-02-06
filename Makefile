@@ -1,5 +1,5 @@
 
-all: io-domain/index.html io-domain/fractals.html io-domain/gol-pcb.html io-domain/newton-intro.html io-domain/fractals-360.html io-domain/highlight-fsharp io-domain/highlight-arduino io-domain/style.css io-domain/code/hsltorgb.fs io-domain/code/intro.fsx io-domain/code io-domain/DejaVuSans.ttf io-domain/pubkey.gpg io-domain/img io-domain/android-chrome-192x192.png io-domain/android-chrome-512x512.png io-domain/apple-touch-icon.png io-domain/browserconfig.xml io-domain/favicon-16x16.png io-domain/favicon-32x32.png io-domain/favicon.ico io-domain/manifest.json io-domain/mstile-150x150.png io-domain/safari-pinned-tab.svg io-domain/keybase.txt
+all: io-domain/index.html io-domain/fractals.html io-domain/gol-pcb.html io-domain/newton-intro.html io-domain/fractals-360.html io-domain/highlight-fsharp io-domain/highlight-arduino io-domain/style.css io-domain/code/hsltorgb.fs io-domain/code/intro.fsx io-domain/code io-domain/DejaVuSans.ttf io-domain/pubkey.gpg io-domain/img io-domain/android-chrome-192x192.png io-domain/android-chrome-512x512.png io-domain/apple-touch-icon.png io-domain/browserconfig.xml io-domain/favicon-16x16.png io-domain/favicon-32x32.png io-domain/favicon.ico io-domain/manifest.json io-domain/mstile-150x150.png io-domain/safari-pinned-tab.svg io-domain/.well-known/keybase.txt
 
 publish: all
 	HASH=`git rev-parse HEAD` && [[ -z $$(git status -s) ]] && cd io-domain && git add . && git commit -m "update to commit $$HASH" && git push
@@ -38,8 +38,9 @@ io-domain/pubkey.gpg: pubkey.gpg
 
 io-domain/img: img
 	cp -r img io-domain/img
-io-domain/keybase.txt: keybase.txt
-	cp keybase.txt io-domain/keybase.txt
+io-domain/.well-known/keybase.txt: keybase.txt
+	mkdir -p io-domain/.well-known
+	cp keybase.txt io-domain/.well-known/keybase.txt
 
 io-domain/android-chrome-192x192.png io-domain/android-chrome-512x512.png io-domain/apple-touch-icon.png io-domain/browserconfig.xml io-domain/favicon-16x16.png io-domain/favicon-32x32.png io-domain/favicon.ico io-domain/manifest.json io-domain/mstile-150x150.png io-domain/safari-pinned-tab.svg: favicon/*
 	cp favicon/* io-domain/
