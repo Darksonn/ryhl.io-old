@@ -1,11 +1,13 @@
 
-all: io-domain/index.html io-domain/fractals.html io-domain/gol-pcb.html io-domain/newton-intro.html io-domain/fractals-360.html io-domain/highlight-fsharp io-domain/highlight-arduino io-domain/style.css io-domain/code/hsltorgb.fs io-domain/code/intro.fsx io-domain/code io-domain/DejaVuSans.ttf io-domain/pubkey.gpg io-domain/img io-domain/android-chrome-192x192.png io-domain/android-chrome-512x512.png io-domain/apple-touch-icon.png io-domain/browserconfig.xml io-domain/favicon-16x16.png io-domain/favicon-32x32.png io-domain/favicon.ico io-domain/manifest.json io-domain/mstile-150x150.png io-domain/safari-pinned-tab.svg io-domain/.well-known/keybase.txt
+all: io-domain/index.html io-domain/fractals.html io-domain/gol-pcb.html io-domain/newton-intro.html io-domain/fractals-360.html io-domain/highlight-fsharp io-domain/highlight-arduino io-domain/style.css io-domain/code/hsltorgb.fs io-domain/code/intro.fsx io-domain/code io-domain/DejaVuSans.ttf io-domain/pubkey.gpg io-domain/img io-domain/android-chrome-192x192.png io-domain/android-chrome-512x512.png io-domain/apple-touch-icon.png io-domain/browserconfig.xml io-domain/favicon-16x16.png io-domain/favicon-32x32.png io-domain/favicon.ico io-domain/manifest.json io-domain/mstile-150x150.png io-domain/safari-pinned-tab.svg io-domain/.well-known/keybase.txt io-domain/backblaze.html
 
 publish: all
 	git push && ssh ryhlio@boats cd git\; git pull\; make
 
 io-domain/index.html: pages/index.html
 	cp pages/index.html io-domain/index.html
+io-domain/backblaze.html: pages/backblaze.html
+	cp pages/backblaze.html io-domain/backblaze.html
 io-domain/fractals.html: pages/fractals.html
 	cp pages/fractals.html io-domain/fractals.html
 io-domain/newton-intro.html: pages/newton-intro.html
