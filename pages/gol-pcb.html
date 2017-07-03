@@ -1,0 +1,249 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>The Game of Life on a PCB – ryhl.io</title>
+    <meta name="keywords" content="game of life, electronics, arduino">
+    <meta name="description" content="I’ve chosen to make a PCB that simulates the game of life on a 5 by 5 LED grid, and can be remote controlled with Bluetooth. Here is a video of the finished product:">
+    <meta name="subject" content="electronics">
+    <meta name="language" content="en-US">
+    <meta name="robots" content="index,follow">
+    <meta name="revised" content="2016-12-18">
+    <meta name="date" content="2016-12-18">
+    <meta name="author" content="Alice Ryhl, alice@ryhl.io">
+    <meta name="pagename" content="The Game of Life on a PCB">
+    <meta name="category" content="electronics">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image" itemprop="image primaryImageOfPage" content="https://ryhl.io/img/gol.jpg">
+    <meta name="twitter:title" property="og:title" itemprop="title name" content="The Game of Life on a PCB">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="image_src" type="image/jpg" href="https://ryhl.io/img/gol.jpg">
+
+    <link rel="stylesheet" href="highlight-arduino/style.css">
+    <script src="highlight-arduino/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+  </head>
+  <body>
+    <h1><a href="index.html">
+    <svg id="varkappa" version="1.1" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.1259375em" height="1.09375em" viewBox="0 0 175 170" enable-background="new 0 0 175 170" xml:space="preserve">
+      <g transform="translate(-241.83035,-280.77737)">
+        <path d="M373.178,331.207c-4.037,27.995-6.055,47.526-6.055,58.594c0,23.047,5.924,34.57,17.773,34.57 c8.333,0,17.057-4.883,26.172-14.648l3.711,2.539c-6.25,14.453-11.816,24.023-16.699,28.711s-10.254,7.031-16.113,7.031 c-8.984,0-15.397-5.404-19.238-16.211c-3.842-10.807-5.762-23.177-5.762-37.109c0-13.672,1.822-31.966,5.469-54.883 c-13.933,14.323-31.381,36.589-52.344,66.797c-13.021,18.75-21.81,30.339-26.367,34.766c-4.557,4.428-9.961,6.641-16.211,6.641 c-9.505,0-14.258-4.688-14.258-14.063c0-4.947,1.888-9.537,5.664-13.77c3.776-4.231,12.695-11.165,26.758-20.801 c4.037-26.432,6.055-45.703,6.055-57.813c0-22.917-5.99-34.375-17.969-34.375c-8.203,0-16.862,4.883-25.977,14.648l-3.906-2.539 c10.287-23.828,21.224-35.742,32.813-35.742c8.854,0,15.234,5.371,19.141,16.113s5.859,23.145,5.859,37.207 c0,13.802-1.758,32.031-5.273,54.688c15.495-15.625,32.487-37.174,50.977-64.648c12.239-18.099,21.061-29.85,26.465-35.254 c5.403-5.403,11.23-8.105,17.48-8.105c4.297,0,7.715,1.367,10.254,4.102s3.809,6.055,3.809,9.961c0,5.208-1.953,9.961-5.859,14.258 S386.85,322.613,373.178,331.207L373.178,331.207z"/>
+      </g>
+    </svg></a>The Game of Life on a PCB – ryhl.io</h1>
+    <div class="date">Published 2016-12-18 by Alice Ryhl</div>
+    <a href="index.html">Go to the front page</a>
+    <p>
+    I’ve created a printed circuit board (PCB) that simulates the game of life
+    on a 5&nbsp;by&nbsp;5 LED grid, and can be remote controlled with Bluetooth.
+    The project was created in collaboration with another student as a school
+    project. Here is a video of the finished product:
+    </p>
+    <iframe class="youtube-4-3" src="https://www.youtube.com/embed/m9UT01vAzbw" frameborder="0" allowfullscreen></iframe>
+    <div class="caption">
+      The PCB simulating a glider in the game of life.
+    </div>
+    <img class="center-img tm15" src="img/gol.jpg">
+    <div class="caption">
+      An image showing the circuit board and the app for remote control.
+    </div>
+    <h2>What is The Game of Life?</h2>
+    <p>
+    <a href="https://en.wikipedia.org/wiki/Game_of_life">The Game of life</a> is
+    a simulation that runs in some two-dimensional grid of cells. The simulation
+    is run in steps, where the next step depends only on the state of the
+    previous. Each cell in the simulation is either dead or alive in each step.
+    </p>
+    <h3>Rules for computing the next step</h3>
+    <p>
+    The simulation is build from three rules dictating the state of each cell.
+    The state of each cell in the next step, is found by first counting how many
+    of the 8 cells around it are live, and using one of these rules:
+    <ul>
+      <li>If there are 2 alive neighbours, the state of the cell is not changed.</li>
+      <li>If there are 3 alive neighbours, the cell is alive in the next step.</li>
+      <li>Otherwise, the cell is dead in the next step.</li>
+    </ul>
+    This is performed on every cell in the grid, and results in the next state.
+    Often when simulating the game of life, the grid is infinitely large, but I
+    don’t have that many LEDs, so my grid is just a 5&nbsp;by&nbsp;5 grid. There
+    are two ways to handle finite grids: Just let the grid have an edge, or let
+    it wrap around.  I’ve chosen to let the grid wrap around, since this allows
+    me to have a glider, that goes on forever.
+    </p>
+    <h3>The Glider</h3>
+    <img class="float-img" src="img/glider.gif">
+    <p>
+    The configuration shown in the video at the start of the article is called
+    a glider. It is a pattern that moves forever, and is small enough fit in
+    my 5&nbsp;by&nbsp;5 grid, without interfering with itself over the edges.
+    This is the best way to show the wrap around in this grid.
+    </p>
+    <h2>Hardware</h2>
+    <p>
+    The main challenge in this project is that the Arduino UNO doesn’t have
+    enough digital outputs to control 25 LEDs. I solved this problem by adding 3
+    shift registers, on which I push the state of the LEDs.
+    </p>
+    <h3>What is a shift register?</h3>
+    <p>
+    A shift register traditionally has 2 inputs and <i>n</i> outputs. Initially
+    all the outputs of the shift register are LOW. The first input is called VAL
+    and the second is called CLOCK. Every time the CLOCK input changes from LOW
+    to HIGH, the first output is changed so it’s the same as the VAL input, and
+    the second output is changed so it’s the same as the first output and so on.
+    Since it takes <i>n</i> updates to the shift register, it allows you to
+    trade ease of updating the outputs for more outputs.
+    </p>
+    <p>
+    The reason we use a shift register in this project is to control many LEDs
+    with a small amount of outputs from the arduino. I chain shift registers by
+    connecting the last output from each shift register to the VAL input of the
+    next, which allows me to control all the LEDs connected to the three shift
+    registers, using a small amount of outputs from the Arduino.
+    </p>
+    <p>
+    In the arduino code I have an array that maps an LED coordinate to the index
+    in the shift register, which is how the code knows how to control each LED.
+    </p>
+    <p>
+    The shift register used in this project has a few additional inputs: A, B,
+    CLOCK and CLR. The VAL input I mentioned earlier is split into the inputs A
+    and B, and the VAL input is regarded to have the value true only if both A
+    and B are true. The CLR input just sets all outputs to low.
+    </p>
+    <p>
+    In order to update the board once, the Arduino has to write to the shift
+    registers 24 times. The reason that it needs to write 24 times, even though
+    3 LEDs are connected directly to the Arduino is elaborated on in the
+    Imperfections section.
+    </p>
+    <h3>The final design</h3>
+    <p>
+    The shift registers I used are called 74HC164N.
+    </p>
+    <img class="center-img" src="img/gol-design.png">
+    <div class="caption">
+      The design of the PCB quickly created in paint. All resistors are 330
+      &Omega;.
+    </div>
+    <p>
+    The circuit board is very simple; it just chains some integrated circuits
+    and connects them to LEDs. The resulting layout, which I created from
+    the design above is shown below:
+    </p>
+    <img class="center-img" src="img/gol-layout.png">
+    <div class="caption">
+      The layout of the PCB. All resistors are 330 &Omega; and all integrated
+      circuits are 74HC164N.
+    </div>
+    <p>
+    In hindsight, I probably shouldn’t have placed the 5V and ground inputs so
+    close to each other. Here’s a picture of the finished PCB:
+    </p>
+    <img class="center-img" src="img/gol-pcb-noarduino.jpg">
+    <div class="caption">
+      The finished PCB. The board was just barely not wide enough for the
+      layout, so I changed one of the outer traces to a wire.
+    </div>
+    <h2>Software</h2>
+    <p>
+    The software consists of two components:  the Arduino code and the Android
+    app.
+    </p>
+    <h3>Arduino</h3>
+    <p>
+    The Arduino code is available
+    <a href="https://github.com/Darksonn/gol-pcb-arduino">here</a>. The code
+    needs to handle two things simultaneously: Running the game of life and
+    receiving commands over Bluetooth. Bluetooth works by have the function
+    <tt>serialEvent</tt> run every time new data is received via Bluetooth. To
+    avoid changes to the <tt>gol</tt> array while the next step is being
+    computed, the changes received via Bluetooth are stored in a separate array,
+    and committed to the <tt>gol</tt> array when the step computation has
+    completed. This results in a <tt>loop</tt> function like the one below:
+    </p>
+    <pre><code class="arduino">void loop() {
+  // if we are not paused, compute the next the game of life step
+  if (!paused) {
+    delay(750);
+    gol_step();
+  }
+  // move changes from the changes array to the gol array
+  // the changes array is updated in the handleSerialData function,
+  // when a bluetooth command decides to update the board
+  int i;
+  for (i = 0; i &lt; 25; ++i) {
+    int x = i % 5, y = i / 5;
+    if (changes[x][y] != 2) {
+      gol[x][y] = changes[x][y];
+      changes[x][y] = 2;
+    }
+  }
+  // move the gol array to the array, which correctly maps coordinates to LEDs
+  for (i = 0; i &lt; 25; ++i) {
+    set(i % 5, i / 5, gol[i%5][i/5] == 1 ? HIGH : LOW);
+  }
+  // actually update the LEDs
+  write_config();
+}</code></pre>
+    <p>
+    Bluetooth works by sending a stream of characters, this means some method of
+    signifying the end of a message is needed. In this project I’ve opted for
+    delimiting commands with an exclamation mark. The Arduino accepts the
+    command <tt>clr!</tt>, which clears the board, the commands <tt>g 0!</tt>
+    and <tt>g 1!</tt>, which pause and unpause the board, and
+    <tt>[ledid] [0 or 1]!</tt>, which turns a LED on or off.
+    </p>
+    <h3>Android</h3>
+    <p>
+    The Android code was written entirely by my partner in this project, so this
+    section will be short. The android code is available <a
+      href="https://github.com/Darksonn/gol-pcb-android">here</a>, and a picture
+    of the app is shown below:
+    </p>
+    <img class="center-img" style="max-width:300px;" src="img/gol-android.png">
+    <div class="caption">
+      Screenshot of the app created for this project.
+    </div>
+    <p>
+    In order for the app to keep in sync with the Arduino, updates must be sent
+    both back and forth. Updates are sent from the phone to the Arduino when the
+    user interacts with the app, and the entire state is sent from the Arduino
+    to the app when the Arduino computes the next the game of life step.
+    </p>
+    <h2>Imperfections</h2>
+    <p>
+    Unfortunately there are some imperfections present in this project. The main
+    one has to do with the design of the circuit board. If you look at the
+    Arduino code, you will see the following workaround:
+    </p>
+    <pre><code class="arduino">// Stores the configuration of the board.
+char configuration[27];
+// maps a coordinate to an LED
+int mapping[5][5] = {
+  {26, 25, 24, 23, 22},
+  {1, 0, 21, 20, 19},
+  {3, 2, 18, 17, 15},
+  {5, 4, 14, 12, 13},
+  {7, 6, 11, 10, 9}
+};</code></pre>
+    <p>
+    Notice how the <tt>configuration</tt> array has the length 27 instead of 25?
+    Notice how the <tt>mapping</tt> array doesn’t have an entry for 8 and 16?
+    These things are because the QH outputs of the shift registers aren’t
+    connected to an LED, like the other outputs are. Instead, they are just
+    connected to the input of the next shift register.
+    </p>
+    <p>
+    This means that the Arduino has to control 3 LEDs directly, instead of just
+    one.
+    </p>
+  </body>
+</html>
