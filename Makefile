@@ -39,7 +39,8 @@ io-domain/pubkey.gpg: pubkey.gpg
 	cp pubkey.gpg io-domain/pubkey.gpg
 
 io-domain/img: img
-	cp -r img io-domain/img
+	mkdir -p io-domain/img
+	cp img/* io-domain/img
 io-domain/.well-known/keybase.txt: keybase.txt
 	mkdir -p io-domain/.well-known
 	cp keybase.txt io-domain/.well-known/keybase.txt
