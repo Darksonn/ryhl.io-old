@@ -116,6 +116,17 @@ h1,h2,h3 {
   margin-top: 8px;
 }
 
+/* https://stackoverflow.com/a/14068216/1704411 */
+.no-anti-alias {
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: pixelated;
+  image-rendering: optimize-contrast;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
 /* positioning and kerning */
 .tm15 {
   margin-top: 15px;

@@ -1,0 +1,473 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Falling sand game – ryhl.io</title>
+    <meta name="keywords" content="falling sand, simulation, assembly">
+    <meta name="description" content="One day I decided I wanted to build something in assembly, and this is the result of that. It is written in 16-bit real mode x86 assembly, and the binary is 512 bytes.">
+    <meta name="subject" content="assembly">
+    <meta name="language" content="en-US">
+    <meta name="robots" content="index,follow">
+    <meta name="revised" content="2017-07-08">
+    <meta name="date" content="2017-07-08">
+    <meta name="author" content="Alice Ryhl, alice@ryhl.io">
+    <meta name="pagename" content="Falling sand game">
+    <meta name="category" content="assembly">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image" itemprop="image primaryImageOfPage" content="https://ryhl.io/img/fsg.png">
+    <meta name="twitter:title" property="og:title" itemprop="title name" content="Falling sand game">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="image_src" type="image/png" href="https://ryhl.io/img/fsg.png">
+
+    <link rel="stylesheet" href="highlight-x86/style.css">
+    <script src="highlight-x86/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+  </head>
+  <body>
+    <h1><a href="index.html">
+    <svg id="varkappa" version="1.1" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.1259375em" height="1.09375em" viewBox="0 0 175 170" enable-background="new 0 0 175 170" xml:space="preserve">
+      <g transform="translate(-241.83035,-280.77737)">
+        <path d="M373.178,331.207c-4.037,27.995-6.055,47.526-6.055,58.594c0,23.047,5.924,34.57,17.773,34.57 c8.333,0,17.057-4.883,26.172-14.648l3.711,2.539c-6.25,14.453-11.816,24.023-16.699,28.711s-10.254,7.031-16.113,7.031 c-8.984,0-15.397-5.404-19.238-16.211c-3.842-10.807-5.762-23.177-5.762-37.109c0-13.672,1.822-31.966,5.469-54.883 c-13.933,14.323-31.381,36.589-52.344,66.797c-13.021,18.75-21.81,30.339-26.367,34.766c-4.557,4.428-9.961,6.641-16.211,6.641 c-9.505,0-14.258-4.688-14.258-14.063c0-4.947,1.888-9.537,5.664-13.77c3.776-4.231,12.695-11.165,26.758-20.801 c4.037-26.432,6.055-45.703,6.055-57.813c0-22.917-5.99-34.375-17.969-34.375c-8.203,0-16.862,4.883-25.977,14.648l-3.906-2.539 c10.287-23.828,21.224-35.742,32.813-35.742c8.854,0,15.234,5.371,19.141,16.113s5.859,23.145,5.859,37.207 c0,13.802-1.758,32.031-5.273,54.688c15.495-15.625,32.487-37.174,50.977-64.648c12.239-18.099,21.061-29.85,26.465-35.254 c5.403-5.403,11.23-8.105,17.48-8.105c4.297,0,7.715,1.367,10.254,4.102s3.809,6.055,3.809,9.961c0,5.208-1.953,9.961-5.859,14.258 S386.85,322.613,373.178,331.207L373.178,331.207z"/>
+      </g>
+    </svg></a>Falling sand game – ryhl.io</h1>
+    <div class="date">Published 2017-07-08 by Alice Ryhl</div>
+    <a href="index.html">Go to the front page</a>
+    <p>
+    One day I decided I wanted to build something in assembly, and this is the
+    result of that. It is written in 16-bit real mode x86 assembly, and the
+    binary is 512 bytes.  The binary is not a linux/windows application or
+    something like that, it’s actually a bootable master boot record, and
+    virtualbox is required to run it inside your current OS.
+    </p>
+    <img class="center-img tm15" src="img/fsg.png">
+    <div class="caption">
+      A screenshot of the game running in virtualbox. There are a few piles of
+      sand with some water, and a smaller floating box with some more sand and
+      water.
+    </div>
+    <p>
+    The purpose of this article is to explain how this project was built, and to
+    explain some of the pitfalls I experienced while learning assembly.
+    </p>
+    <h2 id="what-is">What is a falling sand game?</h2>
+    <p>
+    The quickest way to learn what a falling sand game is, is to go play a bit
+    around with <a href="https://dan-ball.jp/en/javagame/dust/">this falling
+    sand game</a>, from which I derived much of the inspiration for this game.
+    </p>
+    <p>
+    A falling sand game is a simulation game where various materials can be
+    spawned into the world, which then will interact in various ways. My game
+    has four materials: air, wall, water and sand. Air and wall will simply stay
+    fixed and do nothing, while water and sand will both fall if suspended in
+    the air. Sand will form a pile on the ground while water will form a lake.
+    </p>
+    <h2 id="rules">Rules of the simulation</h2>
+    <p>
+    If you wants to make a simulation, you have to define the rules that the
+    simulation follows. The rules for this simulation are the following:
+    </p>
+    <ol start="0">
+      <li>The world is a grid, where each cell has one of four possible
+        states:</li>
+      <li>Air never does anything, but might be replaced with other moving
+        objects. Air is represented with a space.</li>
+      <li>Wall never does anything, but objects cannot move through wall. Wall
+        is represented with a <code>#</code> symbol.</li>
+      <li>Water will fall straight down if there is air below. If there is
+        something else below, water will randomly move left or right. Water is
+        represented with a <code>~</code> symbol.</li>
+      <li>Sand will fall straight down if there is air or water below. If any of
+        the three blocks below the sand are air, the sand will move randomly
+        left or right. Sand is represented with a <code>.</code> symbol.</li>
+    </ol>
+    <p>
+    The most interesting rule is the rule for sand. The chosen rule for sand
+    means that sand wont move around randomly if you put it on something flat,
+    but if you try to build a tall tower of sand, it will collapse into a pile.
+    </p>
+    <img class="center-img tm15 no-anti-alias" style="max-width: 200px" src="img/fsg-sand.png">
+    <div class="caption">
+      Illustration of the locations checked by sand to decide whether or not to
+      randomly move left or right. The upper block is the sand, and the three
+      x’s are the locations checked for air.
+    </div>
+    <h2 id="set-up">Setting up assembly</h2>
+    <p>
+    The assembly I’m writing is real-mode raw x86 assembly, which means it’s
+    going to run as its own OS, instead of inside your OS. However it would be
+    convenient not having to reboot after every change. Therefore one should set
+    up a suitable environment for development. The environment consists of two
+    things: an assembler and a virtual machine. The assembler is the assembly
+    equivalent of a compiler, and the virtual machine allows you to run your new
+    OS inside your current OS.
+    </p>
+    <p>
+    In my project, I’ve used the assembler <a href="http://www.nasm.us/">nasm</a>
+    and the virtual machine <a href="https://www.virtualbox.org/">VirtualBox</a>.
+    After setting up these tools, below is an example file, which prints “Hello
+    World”.
+    </p>
+    <pre><code class="x86asm">BITS 16
+  ; Set up the memory segment used
+  mov ax, 7C0h
+  mov ds, ax
+
+  ; Move the address of the hw string into the si register
+  mov si, hw
+  ; jump to the print label and return here when the instruction ret is called
+  call print
+
+  ; when we reach this label, we sleep forever
+halt:
+  ; this instruction causes the processor to sleep until next interrupt
+  hlt
+  jmp halt
+
+  ; this function prints a zero-terminated string to the teletype
+print:
+  ; save all registers on the stack
+  pusha
+  ; initialize the values of the ah and bh registers
+  ; ah contains the action that the bios should take, in this case we want to
+  ; print to the teletype
+  mov ah, 0Eh
+  ; clear the bh register. when printing to the teletype, this register contains
+  ; the page to which will be written
+  xor bh, bh
+  ; clear the direction flag (this flag is used by the lodsb instruction)
+  cld
+.repeat:
+  ; saves the byte pointed to by the register si in the register al and
+  ; increment si (if the direction flag is set, si is instead decremented)
+  lodsb
+  ; compare the register al to zero (al is the next byte of the string)
+  cmp al, 0
+  ; if it is equal to zero, jump to .end, since we have reached the end of the
+  ; string
+  je .end
+  ; call the 10h interrupt. The value in ah determines what the bios should do
+  ; when this interrupt is called. The value 0Eh means "print to the teletype".
+  int 10h
+  ; print the next character
+  jmp .repeat
+.end:
+  ; restore all the registers to the value they had when pusha was called
+  popa
+  ; return to the location from which print was called
+  ret
+
+  ; db stands for data byte. This line saves the string Hello World in the
+  ; binary. The 10 and 13 are a newline and the zero is the end of the string
+  ; hw is simply the label for this string
+  hw db 'Hello World', 10, 13, 0
+  ; this line pads the file with zeroes, so it is exactly 512 bytes long
+  times 510 - ($-$$) db 0
+  ; required to mark the disk as executable
+  dw 0AA55h</code></pre>
+  <p>
+  In order to run the above code, compile it with <code>nasm helloworld.asm -o
+    helloworld.flp</code> which will create a <code>.flp</code> file. In order
+  to run this file, create a new virtual machine in VirtualBox without a hard
+  drive, and then open the settings of your new virtual machine, and under
+  Storage you add a floppy controller in which you put the <code>.flp</code>
+  file.
+  </p>
+  <p>
+  It was based on information similar to what I’ve given in this section that I,
+  with lots of googling, was able to produce the finished game.
+  </p>
+  <h3 id="keyboard">Accessing the keyboard</h3>
+  <p>
+  The keyboard is accessed by defining what code should run when some keyboard
+  event occurs. Below is shown a simple keyboard handler:
+  </p>
+  <pre><code class="x86asm">keyboardhandler:
+  ; save the state of the registers
+  pusha
+
+  ; read the keyboard key in to the register al
+  in al, 60h
+
+  ; check if the highest bit is set. this bit defines whether or not the key was
+  ; pressed
+  test al, 80h
+  ; if the bit is set, jump to .released
+  jnz .released
+
+.pressed:
+  ; handle a pressed key ...
+  jmp .end
+
+.released:
+  xor al, 80h
+  ; handle a released key ...
+.end:
+  ; finish the handling of the key
+  mov al, 20h
+  out 20h, al
+  popa
+  ; this instruction returns from an interrupt
+  iret</code></pre>
+  <p>
+  The code above defines how to handle a keyboard event. Now you just need to
+  register the keyboard handler:
+  </p>
+  <pre><code class="x86asm">push ds ; register keyboard handler
+push word 0
+pop ds
+cli
+mov [9h * 4], word keyboardhandler
+mov [9h * 4 + 2], word 7C0h
+sti
+pop ds</pre></code>
+  <p>
+  In order to register the keyboard handler, you can put the above code just
+  after the <code>mov ds, ax</code> instruction shown in the hello world
+  example.
+  </p>
+  <p>
+  Unfortunately the keycodes given to the handler does not have any idea what a
+  keyboard layout is, which means you will have to embed the keyboard layout in
+  the program in order to handle typing properly.
+  </p>
+  <h3 id="timing">Timing</h3>
+  <p>
+  Timing in bare x86 assembly is not very easy. Luckily there is a chip on your
+  processor called the <a href="http://wiki.osdev.org/Programmable_Interval_Timer">programmable
+  interval timer</a>. This chip can be configured to send an interrupt with a
+  set frequency. Read the linked osdev article for more information on using
+  this timer, but below is the code that worked for me:
+  </p>
+  <pre><code class="x86asm">mov al, 36h
+out 43h, al
+mov ax, 11931 ; 100 Hz
+out 40h, al
+mov ah, al
+out 40h, al</code></pre>
+  <p>
+  The above code tells the timer to interrupt the hardware one hundred times per
+  second. When used together with the fact that the <code>hlt</code>
+  instruction, causes the processor to wait until the next interrupt, this
+  allows timing. The timer chip runs at 1.193182 MHz, and the constant 11931 in
+  the code above means that this will give a frequency of 100 Hz.
+  </p>
+  <h2 id="the-game">The game</h2>
+  <p>
+  This part of the article will show the various parts of the code and explain
+  them.
+  </p>
+  <h3 id="memory">The memory layout</h3>
+  <p>
+  We need somewhere to store the information from the application. The game
+  board is 80 by 24 tiles, and if we use one byte per tile, this means we need
+  1920 bytes. Beside that, we have a few other variables that are placed in
+  memory:
+  </p>
+  <ul>
+    <li><b>IS_STEPPING_FLAG:</b> 0 when the game is
+      paused, and 1 otherwise.</li>
+    <li><b>POSITION:</b> The index of the cursor on the
+      screen.</li>
+    <li><b>CLOCK_STEP:</b> Counts clock pulses from the timer chip.</li>
+    <li><b>IS_SPAWNING:</b> 1 if a key for spawning stuff is currently pressed,
+      0 otherwise.</li>
+    <li><b>SPAWNING_TYPE:</b> Contains the type of item that is currently being
+    spawned.</li>
+    <li><b>RANDOM:</b> State for the random number generator.</li>
+  </ul>
+  <p>
+  I decided to put the tiles at memory index 1000–2920 and the above values at
+  the memory indexes just below 1000. The value stored at memory index 999 is
+  the IS_STEPPING_FLAG.
+  </p>
+  <p>
+  I actually used a bit more than 1920 bytes for the game board, since the
+  easiest way to avoid sand and water falling out of the map was to just add an
+  invisible wall below the map.
+  </p>
+  <h3 id="impl-keyboard">Implementation of the keyboard handler</h3>
+  <p>
+  In the <a href="#keyboard">previous section about the keyboard</a> a template
+  for keyboard handlers was introduced. The keyboard handler in this game uses
+  this template.
+  </p>
+  <p>
+  The game handles pressed keys by checking for various possible options and
+  jumping to a handler specific to the key. Below the jumps are shown:
+  </p>
+  <pre><code class="x86asm">.pressed:
+  ; figure out what key it was
+  ; cl is used in .spawn, and is 0 if the key was released
+  mov cl, 1
+  cmp al, 1fh ; 0x1f is S
+  je .swap_step
+  cmp al, 48h
+  je .arrow_key_up
+  cmp al, 50h
+  je .arrow_key_down
+  cmp al, 4bh
+  je .arrow_key_left
+  cmp al, 4dh
+  je .arrow_key_right
+  ; the number keys are 02h, 03h, 04h and so on
+  cmp al, 02h
+  jge .spawn
+
+  jmp .end</code></pre>
+  <p>
+  With this method we have thus successfully dispatched to an appropriate
+  handler. The handler <code>.spawn</code> handles when the number keys are
+  pressed, which will change the current tile to the material corresponding to
+  the pressed key. This is done with the following code:
+  </p>
+  <pre><code class="x86asm">.spawn:
+  ; back in the jump handler, we jumped as long as the key id was at least the
+  ; one corresponding to the key 1. We still have to check it is not some key
+  ; with a larger key id than this key.
+  cmp al, 05h
+  jg .end
+  ; al is the key code, the number keys start at 02h, so we change the interval
+  ; to fit the desired values
+  sub al, 02h
+  mov [SPAWNING_TYPE], al
+  mov byte [IS_SPAWNING], cl ; cl corresponds to the press/release status
+  jmp .end</code></pre>
+  <p>
+  The code computes the correct type for the tile and stores it at memory
+  location <code>SPAWNING_TYPE</code> and the <code>cl</code> register, which
+  specifies whether or not the key was pressed or released, is saved in the
+  memory location at <code>IS_SPAWNING</code>.
+  </p>
+  <p>
+  The implementation of <code>.swap_step</code> is much simpler. Unlike the
+  previous code, this code is only run when the key pressed.
+  </p>
+  <pre><code class="x86asm">.swap_step:
+  xor byte [IS_STEPPING_FLAG], 1
+  jmp .end</code></pre>
+  <p>
+  The binary operation <code>xor</code> is here used to swap the lowest bit of
+  the <code>IS_STEPPING_FLAG</code>, and since this value is either 0 or 1, this
+  means it will switch between those two.
+  </p>
+  <p>
+  All the arrow keys have mostly identical code: simply check if the change
+  would move the pointer out of bounds, and if not, move it. The code for one of
+  the keys is shown below:
+  </p>
+  <pre><code class="x86asm">.arrow_key_down:
+  ; we check whether we can move cursor down, and if so, do it
+  mov ax, [POSITION]
+  add ax, WIN_W
+  cmp ax, WIN_SIZE
+  jge .end
+  mov [POSITION], ax
+  jmp .end</code></pre>
+  <p>
+  This concludes the keyboard handler. The next section explains the code that
+  updates the screen.
+  </p>
+  <h3 id="draw">Drawing the screen</h3>
+  <p>
+  The screen is an 80 by 25 terminal, which is called a teletype. It can be
+  interacted with using the instruction <code>int 10h</code> and some
+  documentation for this instruction can be found <a href="https://en.wikipedia.org/wiki/INT_10H">here</a>.
+  This teletype has functionality for drawing to a hidden page and then changing
+  the shown page, avoiding stuff like screen tearing, however I haven’t used
+  this in this project since I was limited to a 512 byte binary and it wasn’t
+  causing any problems.
+  </p>
+  <p>
+  The drawing code consists of two parts: a short initialization and a drawing
+  loop. The initialization is shown below:
+  </p>
+  <pre><code class="x86asm">; make the cursor hidden
+mov cx, 2607h
+mov ah, 01h
+int 10h</code></pre>
+  <p>
+  This call will hide the cursor, so a white block cursor wont be seen moving
+  all over the screen while drawing is happening. The draw loop is rather
+  simple:
+  </p>
+  <pre><code class="x86asm">print_state:
+  ; this function draws the screen
+  ; move cursor to upper left
+  mov ah, 02h
+  mov bh, 0
+  mov dh, 0
+  mov dl, 0
+  int 10h
+
+  mov bx, 0 ; character counter
+.print_char:
+  ; check if we are at the cursor
+  push bx
+  cmp bx, [POSITION]
+  jne .no_cursor
+  mov al, 'x'
+  jmp .print_now
+
+.no_cursor:
+  ; read state
+  mov bl, [STATE+bx]
+  mov bh, 0
+  mov al, [state_char+bx]
+
+.print_now:
+  ; print character
+  mov ah, 0eh
+  mov bh, 0
+  mov bl, 0
+  int 10h
+  pop bx
+
+  ; next iteration
+  inc bx
+  cmp bx, WIN_SIZE
+  jne .print_char
+  ret</code></pre>
+  <p>
+  This code is a simple loop that moves the cursor to the upper right of the
+  screen, and for each tile it first checks if we are at the tile specified by
+  <code>POSITION</code> in which case we draw an <code>x</code>, otherwise we
+  read the type of tile and fetch the appropriate character from the
+  <code>state_char</code> array found at the end of the code. When the character
+  has been foud it is printed using an <code>int 10h</code> instruction.
+  </p>
+  <p>
+  The code above stores the iteration index in the <code>bx</code> register, but
+  also uses that register to perform the system call. The reason I didn’t use
+  some other register for the iteration index is that most registers can’t index
+  memory.
+  </p>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
