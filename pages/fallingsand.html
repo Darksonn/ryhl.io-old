@@ -8,8 +8,8 @@
     <meta name="subject" content="assembly">
     <meta name="language" content="en-US">
     <meta name="robots" content="index,follow">
-    <meta name="revised" content="2017-07-08">
-    <meta name="date" content="2017-07-08">
+    <meta name="revised" content="2018-12-19">
+    <meta name="date" content="2018-12-19">
     <meta name="author" content="Alice Ryhl, alice@ryhl.io">
     <meta name="pagename" content="Falling sand game">
     <meta name="category" content="assembly">
@@ -37,7 +37,7 @@
         <path d="M373.178,331.207c-4.037,27.995-6.055,47.526-6.055,58.594c0,23.047,5.924,34.57,17.773,34.57 c8.333,0,17.057-4.883,26.172-14.648l3.711,2.539c-6.25,14.453-11.816,24.023-16.699,28.711s-10.254,7.031-16.113,7.031 c-8.984,0-15.397-5.404-19.238-16.211c-3.842-10.807-5.762-23.177-5.762-37.109c0-13.672,1.822-31.966,5.469-54.883 c-13.933,14.323-31.381,36.589-52.344,66.797c-13.021,18.75-21.81,30.339-26.367,34.766c-4.557,4.428-9.961,6.641-16.211,6.641 c-9.505,0-14.258-4.688-14.258-14.063c0-4.947,1.888-9.537,5.664-13.77c3.776-4.231,12.695-11.165,26.758-20.801 c4.037-26.432,6.055-45.703,6.055-57.813c0-22.917-5.99-34.375-17.969-34.375c-8.203,0-16.862,4.883-25.977,14.648l-3.906-2.539 c10.287-23.828,21.224-35.742,32.813-35.742c8.854,0,15.234,5.371,19.141,16.113s5.859,23.145,5.859,37.207 c0,13.802-1.758,32.031-5.273,54.688c15.495-15.625,32.487-37.174,50.977-64.648c12.239-18.099,21.061-29.85,26.465-35.254 c5.403-5.403,11.23-8.105,17.48-8.105c4.297,0,7.715,1.367,10.254,4.102s3.809,6.055,3.809,9.961c0,5.208-1.953,9.961-5.859,14.258 S386.85,322.613,373.178,331.207L373.178,331.207z"/>
       </g>
     </svg></a>Falling sand game – ryhl.io</h1>
-    <div class="date">Published 2017-07-08 by Alice Ryhl</div>
+    <div class="date">Published 2018-12-19 by Alice Ryhl</div>
     <a href="index.html">Go to the front page</a>
     <p>
     One day I decided I wanted to build something in assembly, and this is the
@@ -180,14 +180,10 @@ print:
   Storage you add a floppy controller in which you put the <code>.flp</code>
   file.
   </p>
-  <p>
-  It was based on information similar to what I’ve given in this section that I,
-  with lots of googling, was able to produce the finished game.
-  </p>
   <h3 id="keyboard">Accessing the keyboard</h3>
   <p>
   The keyboard is accessed by defining what code should run when some keyboard
-  event occurs. Below is shown a simple keyboard handler:
+  event occurs. A simple keyboard handler is is shown below:
   </p>
   <pre><code class="x86asm">keyboardhandler:
   ; save the state of the registers
@@ -203,12 +199,12 @@ print:
   jnz .released
 
 .pressed:
-  ; handle a pressed key ...
+  ; insert code to handle a pressed key here ...
   jmp .end
 
 .released:
   xor al, 80h
-  ; handle a released key ...
+  ; insert code to handle a released key here ...
 .end:
   ; finish the handling of the key
   mov al, 20h
@@ -234,8 +230,8 @@ pop ds</pre></code>
   example.
   </p>
   <p>
-  Unfortunately the keycodes given to the handler does not have any idea what a
-  keyboard layout is, which means you will have to embed the keyboard layout in
+  Unfortunately the keycodes given to the handler don’t have real relation to
+  the keyboard layout, which means you will have to embed the keyboard layout in
   the program in order to handle typing properly.
   </p>
   <h3 id="timing">Timing</h3>
@@ -268,7 +264,7 @@ out 40h, al</code></pre>
   <p>
   We need somewhere to store the information from the application. The game
   board is 80 by 24 tiles, and if we use one byte per tile, this means we need
-  1920 bytes. Beside that, we have a few other variables that are placed in
+  1920 bytes. Besides that, we have a few other variables that are placed in
   memory:
   </p>
   <ul>
@@ -286,13 +282,43 @@ out 40h, al</code></pre>
   <p>
   I decided to put the tiles at memory index 1000–2920 and the above values at
   the memory indexes just below 1000. The value stored at memory index 999 is
-  the IS_STEPPING_FLAG.
+  the <code>IS_STEPPING_FLAG</code>.
   </p>
   <p>
   I actually used a bit more than 1920 bytes for the game board, since the
   easiest way to avoid sand and water falling out of the map was to just add an
   invisible wall below the map.
   </p>
+  <p>
+  We define these memory locations in the assembly code as shown below:
+  </p>
+  <pre><code>%define RANDOM 993
+%define SPAWNING_TYPE 994
+%define IS_SPAWNING 995
+%define CLOCK_STEP 996
+%define POSITION 997
+%define IS_STEPPING_FLAG 999
+%define STATE 1000</pre></code>
+  <p>
+  Notice how the byte <code>IS_STEPPING_FLAG</code> is at position 999, while
+  <code>STATE</code> is at 1000. This means if something at position
+  <code>[STATE+0]</code> tries to move to the left, it will try to move into the
+  <code>IS_STEPPING_FLAG</code>. The thing is, if it tried to move, the game is
+  stepping, meaning the <code>IS_STEPPING_FLAG</code> is 1. Since the byte for
+  wall is 1, this will block the move from <code>[STATE+0]</code>.
+  </p>
+  <p>
+  This is the kind of hack you would normally avoid, but when you’re limited to
+  512 bytes, you have to do some ugly stuff.
+  </p>
+  <p>
+  We also define a few other constants:
+  </p>
+  <pre><code>; how many clock pulses from the 100 Hz clock should happen for each game step?
+%define CLOCK_STEPS_PER_STEP 2
+%define WIN_W 80
+%define WIN_H 24
+%define WIN_SIZE (WIN_W*WIN_H)</pre></code>
   <h3 id="impl-keyboard">Implementation of the keyboard handler</h3>
   <p>
   In the <a href="#keyboard">previous section about the keyboard</a> a template
@@ -324,7 +350,7 @@ out 40h, al</code></pre>
   jmp .end</code></pre>
   <p>
   With this method we have thus successfully dispatched to an appropriate
-  handler. The handler <code>.spawn</code> handles when the number keys are
+  handler. The code at <code>.spawn</code> handles when the number keys are
   pressed, which will change the current tile to the material corresponding to
   the pressed key. This is done with the following code:
   </p>
@@ -409,7 +435,7 @@ int 10h</code></pre>
 
   mov bx, 0 ; character counter
 .print_char:
-  ; check if we are at the cursor
+  ; check if we are at the cursor, and if so we print 'x'.
   push bx
   cmp bx, [POSITION]
   jne .no_cursor
@@ -418,9 +444,10 @@ int 10h</code></pre>
 
 .no_cursor:
   ; read state
-  mov bl, [STATE+bx]
-  mov bh, 0
-  mov al, [state_char+bx]
+  mov bl, [STATE+bx]      ; bl now contains the state
+  mov bh, 0               ; clear bh, so bx contains the state
+  mov al, [state_char+bx] ; state_char is an array of characters, so this
+                          ; will fetch the character code for the state
 
 .print_now:
   ; print character
@@ -441,33 +468,288 @@ int 10h</code></pre>
   <code>POSITION</code> in which case we draw an <code>x</code>, otherwise we
   read the type of tile and fetch the appropriate character from the
   <code>state_char</code> array found at the end of the code. When the character
-  has been foud it is printed using an <code>int 10h</code> instruction.
+  has been found it is printed using an <code>int 10h</code> instruction.
   </p>
   <p>
   The code above stores the iteration index in the <code>bx</code> register, but
   also uses that register to perform the system call. The reason I didn’t use
   some other register for the iteration index is that most registers can’t index
-  memory.
+  memory. The instructions <code>push bx</code> and <code>pop bx</code> allow
+  saving the current value of <code>bx</code> while using the <code>bx</code>
+  register for something else.
+  </p>
+  <h3 id="setup">Setting up the initial state</h3>
+  <p>
+  When the game starts, we want the game area to be filled with air, except for
+  the walls, which should have wall blocks. This is something we need to do
+  ourselves, and the code below will fill up the memory with the initial state.
+  </p>
+<pre><code>setup:
+  ; make the cursor hidden
+  mov cx, 2607h
+  mov ah, 01h
+  int 10h
+
+  ; bx is our index into the STATE
+  mov bx, 0
+
+  ; clear_loop makes the entire map air
+.clear_loop:
+  mov byte [STATE+bx], 0 ; 0 is air
+  inc bx
+  cmp bx, WIN_W * (WIN_H - 1) ; compare bx with the index of the last air node
+  jne .clear_loop             ; if there are more nodes, repeat the loop
+  ; if we are at the end, fall into clear_loop_2
+
+  ; clear_loop_2 makes the two lowest rows wall
+  ; note that the lowest row is outside the view, but exists so water won't fall
+  ; out, even if you remove the bottom of the world
+.clear_loop_2:
+  mov byte [STATE+bx], 1 ; 1 is wall
+  inc bx
+  cmp bx, WIN_SIZE + WIN_W ; WIN_SIZE is the full size of the window, but we
+                           ; add WIN_W to get the extra invisible row
+  jne .clear_loop_2
+
+  ; clear_loop_3 adds walls on either side of the world
+  mov bx, 0 ; now bx is the y coordinate (zero at top)
+.clear_loop_3:
+  mov byte [STATE+bx], 1           ; create left wall
+  mov byte [(STATE+WIN_W-1)+bx], 1 ; create right wall
+  add bx, WIN_W
+  cmp bx, WIN_SIZE + WIN_W
+  jne .clear_loop_3</code></pre>
+  <p>
+  Setting up the initial state of the world is not the only initialization we
+  need to do. We need to set up the timer and register the keyboard handler, as
+  well as setting <code>CLOCK_STEP</code> so the game starts paused, and
+  <code>IS_SPAWNING</code> since we don’t start the game pressing any key.
+  </p>
+  <code><pre>  ; set up timer
+  ; the timer interrupts the hardware with 100 Hz
+  mov al, 36h
+  out 43h, al
+  mov ax, 11931 ; 100 Hz
+  out 40h, al
+  mov ah, al
+  out 40h, al
+
+  ; register keyboard handler
+  push ds
+  push word 0
+  pop ds
+  cli
+  mov [9h * 4], word keyboardhandler
+  mov [9h * 4 + 2], word 7C0h
+  sti
+  pop ds
+
+  ; The game is not running when we start.
+  mov byte [CLOCK_STEP], 0
+  ; We are also not currently pressing a key and spawning any objects.
+  mov byte [IS_SPAWNING], 0
+
+  ; after setting up the game, we fall directly into the step_start procedure</code></pre>
+  <p>
+  This finishes the setup code. After the setup code, we can continue to the
+  most important part: actually running the game.
+  </p>
+  <h3 id="stepping">Game stepping</h3>
+  <p>
+  The code below runs the game. First it runs some simple code that updates the
+  screen, then it checks if the game is paused, and if not, it uses the timer to
+  run the next step at the appropriate time.
+  </p>
+  <pre><code>step_start:
+  ; this makes it harder for the primitive random number generator to enter a
+  ; short period
+  add byte [RANDOM], 1
+
+  ; update the screen
+  call print_state
+  ; check if we are spawning (holding a key that creates stuff)
+  cmp byte [IS_SPAWNING], 1
+  jne .nospawn
+  ; we are spawning!
+  ; save the newly spawned item to the game state
+  mov bx, [POSITION]
+  mov al, [SPAWNING_TYPE]
+  mov [STATE+bx], al
+
+.nospawn:
+  ; check if we are currently running the simulation
+  cmp byte [IS_STEPPING_FLAG], 0
+  je next_step_start
+
+.do_step:
+  ; yep, the game is running
+  ; let's check if it's time to do a game tick
+  mov al, [CLOCK_STEP]
+  cmp al, CLOCK_STEPS_PER_STEP
+  je really_do_step
+  inc al
+  mov [CLOCK_STEP], al
+next_step_start:
+  ; it is not yet time for another game step
+  hlt ; wait for next interrupt (timer)
+  jmp step_start</pre></code>
+  <p>
+  If we jumped to <code>really_do_step</code>, then the game is not paused, and
+  the timer says it’s time to run a step. Running a step is essentially done by
+  going through every location in the game world, figuring out which type of
+  block it is, and running the appropriate code in order to perform the correct
+  update.
+  </p>
+  <p>
+  One important consideration is that if something is changed during the step,
+  we must avoid hitting that item again later during the same step. One example
+  is falling: if we go through items from the top to bottom, any falling item
+  would be updated again when we are processing the next line. Because of this,
+  we go through the states from the bottom to the top, as nothing moves up.
+  <p>
+  We also need to make sure we handle items moving to the left correctly.
+  </p>
+  </p>
+  <pre><code>really_do_step:
+  ; the game is running, and the timer has told us it's time to step the
+  ; game state
+  mov byte [CLOCK_STEP], 0
+  ; we perform .step for every position in the game
+  ; note that we do it in reverse order, since otherwise stuff we just moved
+  ; down will again be moved down when we reach it next time
+  ; this works since nothing ever moves up
+  mov bx, WIN_SIZE
+.step:
+  dec bx
+  mov cl, [STATE+bx]
+  cmp cl, 1
+  ; if the current item is wall or air, do nothing
+  jle .next
+
+  ; take a look at what's below
+  ; remember that below the visible world is a row of wall
+  cmp byte [STATE+WIN_W+bx], 0
+  ; if the byte below is air, jump to .fall
+  je .fall
+  ; no air below, move randomly right or left
+
+  ; cl currently contains the current item
+  ; check if the current item is sand, in which case we need to check the three
+  ; blocks below in order to make it form a pile
+  cmp cl, 3
+  je .check_below ; the code at .check_below will jump to .move_ok if it should move
+.move_ok:
+  ; either we are not sand, or the blocks below the sand say it's okay to move
+  ; randomly either right or left
+  push cx
+  mov dx, bx ; stash the stepping index in dx, since bx is needed for mul
+
+  ; this code generates a random byte using a very bad random number generator
+  ; we have to use al to store the value, since mul requires it there
+  mov al, [RANDOM]
+  shr al, 1
+  mov bl, 73
+  mul bl
+  add al, 57
+  mov [RANDOM], al
+  mov bl, al
+
+  ; get the two lowest bits in the random number
+  and bl, 3
+  ; the random number is used to find the change in bx where we should move the
+  ; item to
+
+  ; since bl has four values, but moving left, right or staying still has 3
+  ; options, we change zeroes to twos. This means staying still is more likely
+  cmp bl, 0
+  jne .not_zero
+  mov bl, 2
+.not_zero:
+  ; make bx = bl
+  xor bh, bh
+  ; add the index of the current piece of sand to the change in index
+  add bx, dx
+  ; make it so not all movement is to the right
+  ; note that bx != 0 here
+  sub bx, 2
+  ; check if we are trying to move into something that is not air
+  cmp byte [STATE+bx], 0
+  pop cx
+  jne .nope ; we can't move over here
+  ; perform the actual move
+  mov [STATE+bx], cl
+  ; the commands below do not reset bx to the current index, but rather we
+  ; continue stepping from where we moved to
+  ; this fixes a bug when items move left and are then stepped twice
+  ; this causes no problems when moving to the right, since even though we touch
+  ; the current index again, it will be air and therefore skipped
+  mov cx, bx
+  mov bx, dx
+  ; we do still have to move the original index back to bx, since only bx can be
+  ; used to index buffers
+  mov byte [STATE+bx], 0
+  mov dx, cx
+
+.nope:
+  mov bx, dx
+  jmp .next
+
+  ; we jumped to here from a while back
+.check_below:
+  ; this code runs when the item is sand and we need to check what's below
+  ; this code causes sand to fall through water and to make a stable pile when
+  ; on wall
+  cmp byte [STATE+WIN_W+bx], 2
+  je .fall_water
+  cmp byte [STATE+WIN_W-1+bx], 0
+  je .move_ok
+  cmp byte [STATE+WIN_W+bx], 0
+  je .move_ok
+  cmp byte [STATE+WIN_W+1+bx], 0
+  je .move_ok
+  jmp .next
+
+.fall_water:
+  ; when .fall_water is jumped to, cl contains the current item type
+  mov [STATE+WIN_W+bx], cl
+  mov byte [STATE+bx], 2
+  jmp .next
+.fall:
+  ; when .fall is jumped to, cl contains the current item type
+  mov [STATE+WIN_W+bx], cl
+  mov byte [STATE+bx], 0
+
+.next:
+  ; check if the game step is done
+  ; remember that bx goes from bottom to top, so zero is the last value
+  cmp bx, 0
+  ; if not, do the next step
+  jne .step
+  ; otherwise go back to the outer loop
+  jmp next_step_start</pre></code>
+  <p>
+  This concludes the main code of the program.
+  </p>
+  <h3 id="wrapping-up">Wrapping up</h3>
+  <p>
+  To wrap up, we need some boilerplate code that makes the BIOS accept the
+  floppy disk. We put this at the top of the assembly code:
+  </p>
+  <pre><code>BITS 16
+  mov ax, 7C0h
+  mov ds, ax</pre></code>
+  <p>
+  And at the end:
+  </p>
+  <pre><code>  ; a char array describing how the items look
+  state_char db ' #~.'
+  ; the file must be exactly 512 bytes, so we pad it with zeroes
+  times 510 - ($-$$) db 0
+  dw 0AA55h</pre></code>
+  <p>
+  Here the <code>state_char</code> is an array containing the characters used
+  for the four item types in our game. The <code>times</code> instruction pads
+  our binary to be exactly 512 bytes.
   </p>
   </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
